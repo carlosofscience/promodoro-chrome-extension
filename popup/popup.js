@@ -1,37 +1,47 @@
-const tasks = []
 
+let tasks = {}
+
+const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
+const newTaskText = document.getElementById("newTaskText");
 const addTaskBtn = document.getElementById("addTaskBtn");
 const taskContainer = document.getElementById("taskContainer");
 
+addTaskBtn.addEventListener("click", addNewTask)
 
-addTaskBtn.addEventListener('click', addTask)
+function addNewTask(){
+  if (newTaskText.value.length === 0) return;
 
+  const newTaskID = Date.now();
 
-function addTask(){
-  const index = tasks.length
-  tasks.push("")
-  const TaskItem = document.createElement("div")
-  
-  const textItem = document.createElement("input");
-  textItem.type = "text";
-  textItem.placeholder = "Enter a task description";
-  textItem.addEventListener('change', ()=>{
-    tasks[index] = textItem.value;
+  //creating new tasks DOM
+  let newTaskElm = document.createElement("div");
+  newTaskElm.classList.add("task-field");
+  newTaskElm.id = newTaskID;
+
+  //tast text UI, event and logic
+  let textInput = document.createElement("input");
+  textInput.type = "text";
+  textInput.value = newTaskText.value;
+  newTaskText.value = "";
+  textInput.addEventListener("change", (e) => {
+    tasks[newTaskID].text = textInput.value;
+    console.log(tasks[newTaskID]);
+  });
+
+  //delete UI, event and logic
+  let deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "x";
+  deleteBtn.addEventListener("click", (e) => {
+    e.target.parentElement.remove();
+    delete tasks[newTaskID];
     console.log(tasks);
-  })
+  });
 
-  const deleteBtn = document.createElement("input");
-  deleteBtn.type="button"
-  deleteBtn.value="x"
-  //deleting DOM element
-  deleteBtn.addEventListener('click', (e)=>{
-    tasks.splice(index, 1)
-    e.target.parentNode.remove()
-  })
+  newTaskElm.appendChild(textInput);
+  newTaskElm.appendChild(deleteBtn);
+  taskContainer.appendChild(newTaskElm);
 
-  TaskItem.appendChild(textItem);
-  TaskItem.appendChild(deleteBtn);
-
-  taskContainer.appendChild(TaskItem)
-  console.log('added task');
+  tasks[newTaskID] = { text: textInput.value };
+  console.log(tasks);
 }
