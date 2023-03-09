@@ -8,16 +8,26 @@
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <div class="header">
-    <img src="../icon.png" alt="pomodoro icon">
-  </div>
-  <h1>00:00</h1>
-  <button id="startBtn">Start Timer</button>
-  <button id="addTaskBtn">Add Task</button>
+  <header>
+    <h1>00:00</h1>
+    <div id="action-btns">
+      <button id="startBtn"><img src="../assets/play.svg" alt="Play Button"></button>
+      <button><img src="../assets/restart.svg" alt="Restart Button"></button>
+    </div>
+    
+    <div id="new-task-entry">
+      <input type="text" id="newTaskinput">
+      <button id="addTaskBtn"><img src="../assets/add.svg" alt="Add Task Button"></button>
+    </div>
+  </header>
   <div id="taskContainer">
-    <div>
-      <input type="text"/>
-      <input type="button" value="x">
+    <div class="task-field">
+      <input type="text" value="example value">
+      <button id="addTaskBtn">x</button>
+    </div>
+    <div class="task-field">
+      <input type="text">
+      <button id="addTaskBtn">x</button>
     </div>
   </div>
 </body>
