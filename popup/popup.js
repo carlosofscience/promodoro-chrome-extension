@@ -68,3 +68,9 @@ function renderTask({ taskID, text }) {
 
   console.log(tasks);
 }
+
+
+startBtn.addEventListener('click', ()=>{
+  console.log('staring timer');
+  chrome.storage.local.set({isRunning: true})
+})
