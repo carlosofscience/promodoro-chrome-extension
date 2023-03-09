@@ -9,7 +9,8 @@ chrome.storage.sync.get(["tasks"], (res) => {
   });
 
 });
-const startBtn = document.getElementById("startBtn");
+const toggletBtn = document.getElementById("toggletBtn");
+const toggletBtnImg = document.querySelector("#toggletBtn img");
 const restartBtn = document.getElementById("restartBtn");
 const newTaskText = document.getElementById("newTaskText");
 const addTaskBtn = document.getElementById("addTaskBtn");
@@ -70,7 +71,12 @@ function renderTask({ taskID, text }) {
 }
 
 
-startBtn.addEventListener('click', ()=>{
-  console.log('staring timer');
-  chrome.storage.local.set({isRunning: true})
-})
+toggletBtn.addEventListener("click", () => {
+  chrome.storage.local.get(["isRunning"], res =>{
+    const isRunning = res.isRunning ?? false;
+    chrome.storage.local.set({ isRunning: !isRunning });
+    toggletBtnImg.src = 
+      !isRunning ? "../assets/play.svg" : "../assets/pause.svg";
+    console.log(isRunning ? "stopping" : "starting", 'timer');
+    })
+});
