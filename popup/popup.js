@@ -5,7 +5,6 @@ chrome.storage.sync.get(["tasks"], (res) => {
   tasks = res.tasks ?? {};
   //render tasks
   Object.keys(tasks).forEach((key) => {
-    
     renderTask({ taskID: key, text: tasks[key].text });
   });
 
@@ -19,6 +18,8 @@ const taskContainer = document.getElementById("taskContainer");
 addTaskBtn.addEventListener("click", addNewTask)
 
 function saveTasks() {
+
+  console.log("saving tasks: ", tasks);
   chrome.storage.sync.set({ tasks });
 }
 function addNewTask() {
@@ -28,6 +29,8 @@ function addNewTask() {
 
   const task = { taskID, text: newTaskText.value }; 
   newTaskText.value = "";
+  tasks[taskID] = { text: task.text };
+  saveTasks()
   renderTask(task)
 }
 
@@ -63,6 +66,5 @@ function renderTask({ taskID, text }) {
   newTaskElm.appendChild(deleteBtn);
   taskContainer.appendChild(newTaskElm);
 
-  tasks[taskID] = { text: textInput.value };
   console.log(tasks);
 }
