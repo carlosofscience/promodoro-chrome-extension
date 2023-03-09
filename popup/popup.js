@@ -1,22 +1,43 @@
 
 let tasks = {}
 
-chrome.storage.sync.get(["tasks"], (res) => {
-  tasks = res.tasks ?? {};
-  //render tasks
-  Object.keys(tasks).forEach((key) => {
-    renderTask({ taskID: key, text: tasks[key].text });
-  });
-
-});
 const toggletBtn = document.getElementById("toggletBtn");
+const timeLabel = document.getElementById("timeLabel");
 const toggletBtnImg = document.querySelector("#toggletBtn img");
 const restartBtn = document.getElementById("restartBtn");
 const newTaskText = document.getElementById("newTaskText");
 const addTaskBtn = document.getElementById("addTaskBtn");
 const taskContainer = document.getElementById("taskContainer");
+console.log(timeLabel);
+//fetching data on popup load
+chrome.storage.sync.get(["timer", "isRunning", "tasks"], (res) => {
+  tasks = res.tasks ?? {};
+  const isRunning = res.isRunning ?? false;
+
+  //render tasks
+  Object.keys(tasks).forEach((key) => {
+    renderTask({ taskID: key, text: tasks[key].text });
+  });
+  toggletBtnImg.src = !isRunning ? "../assets/play.svg" : "../assets/pause.svg";
+});
+
+//updating time as soon popup shows up
+updateTime();
+setInterval(() => {
+  updateTime();
+}, 1000);
 
 addTaskBtn.addEventListener("click", addNewTask)
+restartBtn.addEventListener("click", ()=>{
+  console.log("restarting timer");
+  chrome.storage.local.set({
+    timer: 0,
+    isRunning: false
+  })
+  toggletBtnImg.src = "../assets/play.svg";
+});
+
+
 
 function saveTasks() {
 
@@ -74,9 +95,27 @@ function renderTask({ taskID, text }) {
 toggletBtn.addEventListener("click", () => {
   chrome.storage.local.get(["isRunning"], res =>{
     const isRunning = res.isRunning ?? false;
-    chrome.storage.local.set({ isRunning: !isRunning });
-    toggletBtnImg.src = 
-      !isRunning ? "../assets/play.svg" : "../assets/pause.svg";
-    console.log(isRunning ? "stopping" : "starting", 'timer');
+    chrome.storage.local.set({ isRunning: !isRunning }, ()=>{
+        toggletBtnImg.src = isRunning
+          ? "../assets/play.svg"
+          : "../assets/pause.svg";
+        console.log(isRunning ? "stopping" : "starting", "timer");
+      });
     })
 });
+
+function updateTime() {
+  chrome.storage.local.get(["timer", "timeout"], (res) => {
+    updateTimeLabel(res.timer, res.timeout);
+  });
+}
+
+function updateTimeLabel(time, timeout) {
+  const min = Math.round(timeout / 60) - Math.ceil(time / 60);
+  const sec = (60 - (time % 60)) % 60;
+  timeLabel.textContent =
+    `${min}`.padStart(2, "0") + ":" + `${sec}`.padStart(2, "0");
+}
+
+
+
