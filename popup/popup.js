@@ -1,6 +1,15 @@
 
 let tasks = {}
 
+chrome.storage.sync.get(["tasks"], (res) => {
+  tasks = res.tasks ?? {};
+  //render tasks
+  Object.keys(tasks).forEach((key) => {
+    
+    renderTask({ taskID: key, text: tasks[key].text });
+  });
+
+});
 const startBtn = document.getElementById("startBtn");
 const restartBtn = document.getElementById("restartBtn");
 const newTaskText = document.getElementById("newTaskText");
@@ -9,32 +18,44 @@ const taskContainer = document.getElementById("taskContainer");
 
 addTaskBtn.addEventListener("click", addNewTask)
 
-function addNewTask(){
+function saveTasks() {
+  chrome.storage.sync.set({ tasks });
+}
+function addNewTask() {
   if (newTaskText.value.length === 0) return;
 
-  const newTaskID = Date.now();
+  const taskID = Date.now();
 
+  const task = { taskID, text: newTaskText.value }; 
+  newTaskText.value = "";
+  renderTask(task)
+}
+
+function renderTask({ taskID, text }) {
+  console.log("rendering: ", taskID);
   //creating new tasks DOM
   let newTaskElm = document.createElement("div");
   newTaskElm.classList.add("task-field");
-  newTaskElm.id = newTaskID;
+  newTaskElm.id = taskID;
 
   //tast text UI, event and logic
   let textInput = document.createElement("input");
   textInput.type = "text";
-  textInput.value = newTaskText.value;
-  newTaskText.value = "";
+  textInput.value = text;
   textInput.addEventListener("change", (e) => {
-    tasks[newTaskID].text = textInput.value;
-    console.log(tasks[newTaskID]);
+    tasks[taskID].text = textInput.value;
+    saveTasks();
+    console.log(tasks[taskID]);
   });
 
   //delete UI, event and logic
   let deleteBtn = document.createElement("button");
   deleteBtn.textContent = "x";
   deleteBtn.addEventListener("click", (e) => {
+    console.log(taskID, tasks[taskID]);
+    delete tasks[taskID];
+    saveTasks();
     e.target.parentElement.remove();
-    delete tasks[newTaskID];
     console.log(tasks);
   });
 
@@ -42,6 +63,6 @@ function addNewTask(){
   newTaskElm.appendChild(deleteBtn);
   taskContainer.appendChild(newTaskElm);
 
-  tasks[newTaskID] = { text: textInput.value };
+  tasks[taskID] = { text: textInput.value };
   console.log(tasks);
 }
