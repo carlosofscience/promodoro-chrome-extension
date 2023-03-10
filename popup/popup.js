@@ -10,10 +10,9 @@ const addTaskBtn = document.getElementById("addTaskBtn");
 const taskContainer = document.getElementById("taskContainer");
 console.log(timeLabel);
 //fetching data on popup load
-chrome.storage.sync.get(["timer", "isRunning", "tasks"], (res) => {
+chrome.storage.sync.get(["timer", "isRunning", "tasks", "timeout"], (res) => {
   tasks = res.tasks ?? {};
   const isRunning = res.isRunning ?? false;
-
   //render tasks
   Object.keys(tasks).forEach((key) => {
     renderTask({ taskID: key, text: tasks[key].text });
@@ -110,10 +109,14 @@ function updateUI() {
 }
 
 function updateTimeLabel(time, timeout) {
+  timeout = timeout ?? 25 * 60;
   const min = Math.round(timeout / 60) - Math.ceil(time / 60);
+  // console.log(timeout);
   const sec = (60 - (time % 60)) % 60;
   timeLabel.textContent =
     `${min}`.padStart(2, "0") + ":" + `${sec}`.padStart(2, "0");
+      // console.log(timeout, min);
+
 }
 
 function updateToggleButton(isRunning){
