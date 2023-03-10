@@ -22,9 +22,9 @@ chrome.storage.sync.get(["timer", "isRunning", "tasks"], (res) => {
 });
 
 //updating time as soon popup shows up
-updateTime();
+updateUI();
 setInterval(() => {
-  updateTime();
+  updateUI();
 }, 1000);
 
 addTaskBtn.addEventListener("click", addNewTask)
@@ -96,17 +96,16 @@ toggletBtn.addEventListener("click", () => {
   chrome.storage.local.get(["isRunning"], res =>{
     const isRunning = res.isRunning ?? false;
     chrome.storage.local.set({ isRunning: !isRunning }, ()=>{
-        toggletBtnImg.src = isRunning
-          ? "../assets/play.svg"
-          : "../assets/pause.svg";
+        updateToggleButton(isRunning)
         console.log(isRunning ? "stopping" : "starting", "timer");
       });
     })
 });
 
-function updateTime() {
-  chrome.storage.local.get(["timer", "timeout"], (res) => {
+function updateUI() {
+  chrome.storage.local.get(["timer", "timeout", "isRunning"], (res) => {
     updateTimeLabel(res.timer, res.timeout);
+    updateToggleButton(res.isRunning);
   });
 }
 
@@ -115,6 +114,10 @@ function updateTimeLabel(time, timeout) {
   const sec = (60 - (time % 60)) % 60;
   timeLabel.textContent =
     `${min}`.padStart(2, "0") + ":" + `${sec}`.padStart(2, "0");
+}
+
+function updateToggleButton(isRunning){
+  toggletBtnImg.src = !isRunning ? "../assets/play.svg" : "../assets/pause.svg";
 }
 
 
